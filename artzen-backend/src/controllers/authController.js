@@ -148,6 +148,20 @@ const uploadAvatar = asyncHandler(async (req, res) => {
   return ok(res, data, 'Avatar updated');
 });
 
+const verifyEmail = asyncHandler(async (req, res) => {
+  const { email, code } = req.body;
+  if (!email || !code) return fail(res, 'email and code are required', 422);
+
+  const { data, error } = await supabaseAnon.auth.verifyOtp({
+    email,
+    token: code,
+    type: 'signup'
+  });
+  if (error) return fail(res, error.message, 400);
+
+  return ok(res, { session: data.session, user: data.user }, 'Email verified successfully');
+});
+
 module.exports = {
   signup,
   login,
@@ -157,5 +171,6 @@ module.exports = {
   refreshToken,
   me,
   updateProfile,
-  uploadAvatar
+  uploadAvatar,
+  verifyEmail
 };
