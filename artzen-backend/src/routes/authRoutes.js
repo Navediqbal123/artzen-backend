@@ -4,6 +4,7 @@ const { requireAuth } = require('../middleware/auth');
 const { uploadAvatar } = require('../middleware/upload');
 
 router.post('/signup', ctrl.signup);
+router.post('/verify-email', ctrl.verifyEmail);
 router.post('/login', ctrl.login);
 router.post('/logout', requireAuth, ctrl.logout);
 router.post('/forgot-password', ctrl.forgotPassword);
