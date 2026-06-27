@@ -23,7 +23,11 @@ const signup = asyncHandler(async (req, res) => {
       emailRedirectTo: process.env.EMAIL_VERIFY_REDIRECT_URL
     }
   });
-  if (error) return fail(res, error.message, 400);
+
+  if (error) {
+    console.log('SIGNUP ERROR FULL:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
+    return fail(res, error.message || JSON.stringify(error), 400);
+  }
 
   // public.users row is created automatically by the handle_new_auth_user
   // DB trigger (see sql/002_functions_triggers.sql)
@@ -46,7 +50,11 @@ const login = asyncHandler(async (req, res) => {
   if (!email || !password) return fail(res, 'email and password are required', 422);
 
   const { data, error } = await supabaseAnon.auth.signInWithPassword({ email, password });
-  if (error) return fail(res, error.message, 401);
+
+  if (error) {
+    console.log('LOGIN ERROR FULL:', JSON.stringify(error, Object.getOwnPropertyNames(error)));
+    return fail(res, error.message || JSON.stringify(error), 401);
+  }
 
   const { data: profile } = await supabaseAdmin.from('users').select('*').eq('id', data.user.id).single();
   if (profile?.is_banned) return fail(res, 'This account has been banned', 403);
